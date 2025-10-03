@@ -16,6 +16,7 @@ constexpr auto TEXT_WHITE_BLACK = 10; // Black text on white
 constexpr auto NO_OF_COLOR_PAIR = 8;
 
 // Block layout: {w-1, h-1}{x0,y0}{x1,y1}{x2,y2}{x3,y3}
+// packed integer encoding the coordinates
 int x  = 431424;
 int y  = 598356;
 int r  = 427089;
@@ -139,7 +140,7 @@ static void print_board_and_score() {
 
 static void execute_loop() {
     while(tick_new_piece()) {
-        usleep(10000);
+        usleep(10000); // 10,000 microseconds = 0.01 seconds
         if ((c = getch()) == 'a' && x > 0 && !check_hit(x - 1, y, r)) {
             x--;
         } // left
@@ -172,21 +173,21 @@ static void execute_loop() {
     }
 }
 
-int main() {
-    srand(time(0));
-    
-    initscr(); // initialize curses
-    start_color();
+void run_tetris() {
+  srand(time(0));
 
-    set_up_init_color_pair();
-    generate_new_piece();
-    resizeterm(22, 22);
-    noecho(); // disable automatic echo
-    timeout(0);
-    curs_set(0);
-    box(stdscr, 0, 0);
+  initscr(); // initialize curses
+  start_color();
 
-    execute_loop();
+  set_up_init_color_pair();
+  generate_new_piece();
+  resizeterm(22, 22);
+  noecho(); // disable automatic echo
+  timeout(0);
+  curs_set(0);
+  box(stdscr, 0, 0);
 
-    endwin();
+  execute_loop();
+
+  endwin();
 }
