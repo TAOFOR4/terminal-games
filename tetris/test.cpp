@@ -40,7 +40,7 @@ auto main(int argc, char **argv) -> int {
   set_up_init_color_pair();
 
   WINDOW *stdwin = stdscr;
-  wrefresh(stdwin);
+  refresh();
   wrefresh(stdscr);
   wborder(stdwin, 0, 0, 0, 0, 0, 0, 0, 0);
   wprintw(stdwin, "Hello World █");

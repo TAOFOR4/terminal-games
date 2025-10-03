@@ -41,15 +41,15 @@ int score = 0;
 std::array<std::array<int, 10>, 20> board{};
 
 // extract a 2-bit number from a block entry
-static int NUM(int x, int y) { 
+static int extract_number(int x, int y) { 
     return 3 & block[p][x] >> y; 
 }
 
 static void generate_new_piece() {
   y = py = 0;
-  p = rand() % 7;
-  r = pr = rand() % 4;
-  x = px = rand() % (10 - NUM(r, 16));
+  p = rand() % 7; // pick random tetromino
+  r = pr = rand() % 4; // pick random rotation
+  x = px = rand() % (10 - extract_number(r, 16)); // starting x
 }
 
 static void set_up_init_color_pair() {
@@ -65,7 +65,7 @@ static void set_up_init_color_pair() {
 
 static void set_piece(int x, int y, int r, int v) {
     for (int i = 0; i < NO_OF_COLOR_PAIR; i += 2) {
-        board[NUM(r, i * 2) + y][NUM(r, (i * 2) + 2) + x] = v;
+        board[extract_number(r, i * 2) + y][extract_number(r, (i * 2) + 2) + x] = v;
     }
 }
 
@@ -75,20 +75,20 @@ static void update_piece() {
 }
 
 static int check_hit(int x, int y, int r) {
-  if (y + NUM(r, 18) > 19) {
+  if (y + extract_number(r, 18) > 19) {
     return 1;
   }
   set_piece(px, py, pr, 0);
   c = 0;
   for (int i = 0; i < NO_OF_COLOR_PAIR; i += 2) {
-    board[y + NUM(r, i * 2)][x + NUM(r, (i * 2) + 2)] && c++;
+    board[y + extract_number(r, i * 2)][x + extract_number(r, (i * 2) + 2)] && c++;
   }
   set_piece(px, py, pr, p + 1);
   return c;
 }
 
 static void remove_line() {
-  for (int row = y; row <= y + NUM(r, 18); row++) {
+  for (int row = y; row <= y + extract_number(r, 18); row++) {
     c = 1;
     for (int i = 0; i < 10; i++) {
       c *= board[row][i];
@@ -134,7 +134,7 @@ static void print_board_and_score() {
   }
   move(21, 1);
   printw("Score: %d", score);
-  wrefresh();
+  refresh();
 }
 
 static void execute_loop() {
@@ -143,7 +143,7 @@ static void execute_loop() {
         if ((c = getch()) == 'a' && x > 0 && !check_hit(x - 1, y, r)) {
             x--;
         } // left
-        if (c == 'd' && x + NUM(r, 16) < 9 && !check_hit(x + 1, y, r)) {
+        if (c == 'd' && x + extract_number(r, 16) < 9 && !check_hit(x + 1, y, r)) {
             x++;
         } // right
         if (c == 's') {
@@ -156,7 +156,7 @@ static void execute_loop() {
         } // drop
         if (c == 'w') {
             ++r %= 4;
-            while (x + NUM(r, 16) > 9) {
+            while (x + extract_number(r, 16) > 9) {
                 x--;
             }
             if (check_hit(x, y, r)) {
